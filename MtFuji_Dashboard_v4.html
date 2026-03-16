@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mt Fuji AI Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F0F4F8;color:#1e293b}
+.hdr{background:#0D1F4C;display:flex;align-items:center;gap:14px;padding:0 22px;height:54px;
+  position:sticky;top:0;z-index:300;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#1A5CFF,#00B8A9);
+  display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ht{color:#fff;font-weight:700;font-size:14px}
+.hs{color:#7DD3FC;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.hr{margin-left:auto;display:flex;align-items:center;gap:12px}
+.abtn{background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.45);border-radius:6px;
+  padding:4px 11px;cursor:pointer;color:#EF4444;font-size:11px;font-weight:700;
+  display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#EF4444;animation:p 1.4s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.hm{color:#94A3B8;font-size:10px}
+.abar{background:#FEF2F2;border-bottom:2px solid rgba(239,68,68,.15);
+  padding:6px 22px;display:flex;align-items:center;gap:7px;overflow-x:auto}
+.al{font-size:9.5px;font-weight:700;color:#EF4444;text-transform:uppercase;
+  letter-spacing:.07em;white-space:nowrap;margin-right:3px}
+.ap{padding:3px 9px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap}
+.cx{margin-left:auto;background:none;border:none;color:#94A3B8;cursor:pointer;
+  font-size:15px;padding:0 3px;flex-shrink:0}
+.tabs{background:#fff;border-bottom:2px solid #E2E8F0;padding:0 22px;
+  display:flex;overflow-x:auto;position:sticky;top:54px;z-index:200}
+.tab{background:none;border:none;border-bottom:2.5px solid transparent;
+  padding:11px 15px;font-size:12px;font-weight:600;color:#64748B;
+  cursor:pointer;white-space:nowrap;transition:color .15s;margin-bottom:-2px}
+.tab:hover{color:#1A5CFF}.tab.on{color:#1A5CFF;border-bottom-color:#1A5CFF}
+.wrap{padding:18px 22px;max-width:1440px;margin:0 auto}
+.panel{display:none;flex-direction:column;gap:13px}
+.panel.on{display:flex}
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kc{background:#fff;border:1.5px solid #E2E8F0;border-radius:9px;padding:13px 15px}
+.kc.r{border-color:#EF4444;box-shadow:0 0 0 3px rgba(239,68,68,.09)}
+.kc.a{border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.08)}
+.kl{font-size:9.5px;font-weight:700;color:#64748B;text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:5px}
+.kv{font-size:24px;font-weight:700;font-family:'Courier New',monospace;line-height:1}
+.ku{font-size:11px;color:#64748B;font-weight:500;margin-left:3px}
+.ks{font-size:10px;color:#94A3B8;margin-top:3px}
+.ks.r{color:#EF4444}
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:9px;padding:15px 18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.st{font-size:12px;font-weight:700;color:#0D1F4C;display:flex;align-items:center;
+  gap:7px;margin-bottom:11px}
+.sd{width:3px;height:14px;border-radius:2px;flex-shrink:0}
+.stag{margin-left:auto;font-size:9.5px;color:#EF4444;font-weight:700}
+.cw{position:relative;width:100%}
+.tleg{display:flex;gap:13px;flex-wrap:wrap;margin-bottom:7px}
+.tl{display:flex;align-items:center;gap:4px;font-size:9.5px;color:#64748B}
+.tline{width:20px;height:0;border-top:2px dashed}
+.tbox{width:13px;height:10px;border:1px solid}
+.fb{border-left:4px solid #EF4444;background:#FEF2F2;border-radius:0 8px 8px 0;
+  padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
+.fi{font-size:18px;flex-shrink:0}
+.ft{font-weight:700;color:#EF4444;font-size:12px;margin-bottom:3px}
+.fd{font-size:11px;color:#475569;line-height:1.5}
+.fd strong{color:#0D1F4C}
+.ib{background:#ECFDF5;border-radius:5px;padding:6px 9px;margin-top:7px;
+  font-size:10.5px;font-weight:600;color:#065F46}
+.leg{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:10.5px;color:#64748B}
+.ls{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.ttbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.ttbl th{background:#F8FAFC;border:1px solid #E2E8F0;padding:7px 10px;
+  font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;
+  letter-spacing:.05em;text-align:center}
+.ttbl td{border:1px solid #E2E8F0;padding:7px 10px;text-align:center}
+.ttbl tr:hover td{background:#F8FAFC}
+.ttbl td.nm{font-weight:600;text-align:left;color:#0D1F4C}
+.sv{color:#10B981;font-weight:700}
+.svb{background:#ECFDF5;color:#065F46;font-weight:700}
+.br td{background:#FFF7ED;font-weight:600}
+.footer{text-align:center;padding:13px;color:#94A3B8;font-size:10px;
+  border-top:1px solid #E2E8F0;background:#fff;margin-top:8px}
+::-webkit-scrollbar{height:4px;width:4px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">🗻</div>
+  <div>
+    <div class="ht">Mt Fuji AI Platform</div>
+    <div class="hs">Smart Facility Optimisation</div>
+  </div>
+  <div class="hr">
+    <div class="abtn" onclick="toggleAlerts()"><span class="dot"></span>5 Active Alerts</div>
+    <div class="hm">BLD-HQ · 5,000 m² · 16 Mar 2025</div>
+  </div>
+</div>
+
+<div class="abar" id="abar">
+  <span class="al">⚑ Alerts</span>
+  <span class="ap" style="background:#EF4444">⚑ CT Fouling – kW/TR &gt;1.0 · 11:00–16:00</span>
+  <span class="ap" style="background:#EF4444">⚑ MTR-PUMP-1 Anomaly – Current +28% · 13:00–20:00</span>
+  <span class="ap" style="background:#EA580C">⚑ Night Water Leak – 8× normal · 17:00–21:00</span>
+  <span class="ap" style="background:#F59E0B">⚑ AHU Overcooling – 21°C vs 23°C · 07:00–10:00</span>
+  <span class="ap" style="background:#F59E0B">⚑ Peak Demand Breach · 12:15–14:45</span>
+  <button class="cx" onclick="toggleAlerts()">✕</button>
+</div>
+
+<div class="tabs">
+  <button class="tab on"  onclick="go('overview',this)">📊 Overview</button>
+  <button class="tab"     onclick="go('chiller',this)">❄️ Chiller &amp; CT</button>
+  <button class="tab"     onclick="go('energy',this)">⚡ Energy</button>
+  <button class="tab"     onclick="go('ahu',this)">🌡️ AHU &amp; Comfort</button>
+  <button class="tab"     onclick="go('motor',this)">⚙️ Motor Anomaly</button>
+  <button class="tab"     onclick="go('water',this)">💧 Water &amp; Leak</button>
+  <button class="tab"     onclick="go('asset',this)">🔧 Asset Health</button>
+  <button class="tab"     onclick="go('twin',this)">🏗️ Digital Twin</button>
+</div>
+
+<div class="wrap">
+
+<!-- OVERVIEW -->
+<div class="panel on" id="p-overview">
+  <div class="kg">
+    <div class="kc"><div class="kl">30-Day Avg Energy</div><div><span class="kv" style="color:#10B981">2,743</span><span class="ku">kWh/day</span></div><div class="ks">Trending ↓ · Target 2,800</div></div>
+    <div class="kc"><div class="kl">30-Day Total CO₂</div><div><span class="kv" style="color:#0D1F4C">57.6</span><span class="ku">tCO₂</span></div><div class="ks">0.7 kg/kWh factor</div></div>
+    <div class="kc"><div class="kl">Avg ESG Score</div><div><span class="kv" style="color:#10B981">74.8</span><span class="ku">/ 100</span></div><div class="ks">Improving ↑</div></div>
+    <div class="kc"><div class="kl">Total Tickets 30d</div><div><span class="kv" style="color:#0D1F4C">201</span><span class="ku">tickets</span></div><div class="ks">~7/day · 88% SLA met</div></div>
+  </div>
+  <div class="card"><div class="st"><span class="sd" style="background:#1A5CFF"></span>30-Day Energy Consumption (kWh/day)<span class="stag">Target 2,800 kWh</span></div><div class="cw" style="height:185px"><canvas id="c0a"></canvas></div></div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#00B8A9"></span>CO₂ Emissions (kg/day)</div><div class="cw" style="height:160px"><canvas id="c0b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#7C3AED"></span>ESG Score Trend</div><div class="cw" style="height:160px"><canvas id="c0c"></canvas></div></div>
+  </div>
+</div>
+
+<!-- CHILLER -->
+<div class="panel" id="p-chiller">
+  <div class="kg">
+    <div class="kc r"><div class="kl">Avg kW/TR</div><div><span class="kv" style="color:#EF4444">0.913</span><span class="ku">kW/TR</span></div><div class="ks r">⚑ Target &lt;0.85</div></div>
+    <div class="kc r"><div class="kl">Bad Intervals</div><div><span class="kv" style="color:#EF4444">20</span><span class="ku">×15min</span></div><div class="ks r">~5 hrs degraded</div></div>
+    <div class="kc r"><div class="kl">Min CT ΔT</div><div><span class="kv" style="color:#EF4444">1.9</span><span class="ku">°C</span></div><div class="ks r">⚑ &lt;3°C = fouling</div></div>
+    <div class="kc r"><div class="kl">Fouling Flag</div><div><span class="kv" style="color:#EF4444;font-size:17px">ACTIVE</span></div><div class="ks r">CT Maintenance Needed</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#1A5CFF"></span>kW/TR Efficiency – 24h<span class="stag">⚑ Shaded = fouling 11:00–16:00</span></div>
+    <div class="tleg">
+      <div class="tl"><div class="tline" style="border-color:#EF4444"></div>Alert 1.0</div>
+      <div class="tl"><div class="tline" style="border-color:#F59E0B"></div>Warn 0.85</div>
+      <div class="tl"><div class="tbox" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)"></div>Fouling window</div>
+    </div>
+    <div class="cw" style="height:195px"><canvas id="c1a"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#00B8A9"></span>Condenser Inlet vs Outlet (°C)</div><div class="cw" style="height:170px"><canvas id="c1b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#7C3AED"></span>Cooling Tower ΔT (°C)<span class="stag">Alert &lt;3°C</span></div><div class="cw" style="height:170px"><canvas id="c1c"></canvas></div></div>
+  </div>
+  <div class="fb"><div class="fi">⚑</div><div><div class="ft">MAINTENANCE RECOMMENDATION – Cooling Tower Fouling</div><div class="fd">CT ΔT fell below 3°C, Condenser Inlet exceeded 34°C. kW/TR &gt;1.0 for ~5 hrs. <strong>Action: Clean CT fill media. Schedule chemical dosing. Expected saving: 15–20%.</strong></div></div></div>
+</div>
+
+<!-- ENERGY -->
+<div class="panel" id="p-energy">
+  <div class="kg">
+    <div class="kc"><div class="kl">Daily Consumption</div><div><span class="kv" style="color:#0D1F4C">3,124</span><span class="ku">kWh</span></div><div class="ks">Target &lt;2,800</div></div>
+    <div class="kc r"><div class="kl">Peak Demand</div><div><span class="kv" style="color:#EF4444">547</span><span class="ku">kW</span></div><div class="ks r">⚑ Setpoint 520 kW</div></div>
+    <div class="kc a"><div class="kl">Demand Breaches</div><div><span class="kv" style="color:#F59E0B">3</span><span class="ku">events</span></div><div class="ks">Control triggered</div></div>
+    <div class="kc"><div class="kl">HVAC Share</div><div><span class="kv" style="color:#1A5CFF">56</span><span class="ku">%</span></div><div class="ks">of total load</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#1A5CFF"></span>Stacked Load Profile (kW) + Peak Demand<span class="stag">⚑ Shaded = demand breach</span></div>
+    <div class="leg">
+      <div class="li"><div class="ls" style="background:#1A5CFF"></div>HVAC</div>
+      <div class="li"><div class="ls" style="background:#00B8A9"></div>Lighting</div>
+      <div class="li"><div class="ls" style="background:#7C3AED"></div>Other</div>
+      <div class="li"><div class="ls" style="background:#EF4444;border-radius:50%"></div>Peak Demand</div>
+    </div>
+    <div class="cw" style="height:200px"><canvas id="c2a"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#F59E0B"></span>Occupancy % vs Total Power (kW)</div><div class="cw" style="height:160px"><canvas id="c2b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#10B981"></span>Interval Energy (kWh per 15 min)</div><div class="cw" style="height:160px"><canvas id="c2c"></canvas></div></div>
+  </div>
+</div>
+
+<!-- AHU -->
+<div class="panel" id="p-ahu">
+  <div class="kg">
+    <div class="kc a"><div class="kl">Overcooling Intervals</div><div><span class="kv" style="color:#3B82F6">12</span><span class="ku">×15min</span></div><div class="ks">07:00–10:00</div></div>
+    <div class="kc"><div class="kl">Wasted AHU Energy</div><div><span class="kv" style="color:#F59E0B">13.5</span><span class="ku">kWh</span></div><div class="ks">Overcooling waste</div></div>
+    <div class="kc"><div class="kl">Peak CO₂</div><div><span class="kv" style="color:#10B981">1,148</span><span class="ku">ppm</span></div><div class="ks">Alert &gt;1200 · within limit</div></div>
+    <div class="kc"><div class="kl">Comfort Time</div><div><span class="kv" style="color:#10B981">79</span><span class="ku">%</span></div><div class="ks">Hours in comfort band</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#1A5CFF"></span>Zone Temperature vs Setpoint 23°C<span class="stag">⚑ Shaded = overcooling 07:00–10:00</span></div>
+    <div class="tleg">
+      <div class="tl"><div class="tline" style="border-color:#EF4444"></div>Hot &gt;24°C</div>
+      <div class="tl"><div class="tline" style="border-color:#3B82F6"></div>Cold &lt;22°C</div>
+      <div class="tl"><div class="tline" style="border-color:#10B981;border-style:solid"></div>Setpoint 23°C</div>
+    </div>
+    <div class="cw" style="height:195px"><canvas id="c3a"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#00B8A9"></span>CO₂ (ppm) vs Occupancy Count</div><div class="cw" style="height:160px"><canvas id="c3b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#7C3AED"></span>Air Flow (m³/h) vs Cooling Valve %</div><div class="cw" style="height:160px"><canvas id="c3c"></canvas></div></div>
+  </div>
+</div>
+
+<!-- MOTOR -->
+<div class="panel" id="p-motor">
+  <div class="kg">
+    <div class="kc r"><div class="kl">Anomaly Status</div><div><span class="kv" style="color:#EF4444;font-size:16px">DETECTED</span></div><div class="ks r">MTR-PUMP-1 · From 13:00</div></div>
+    <div class="kc r"><div class="kl">Max Current Dev.</div><div><span class="kv" style="color:#EF4444">+28</span><span class="ku">%</span></div><div class="ks r">Baseline 40A → now ~51A</div></div>
+    <div class="kc r"><div class="kl">Max Winding Temp</div><div><span class="kv" style="color:#EF4444">96</span><span class="ku">°C</span></div><div class="ks r">Normal 80°C · Alert &gt;90°C</div></div>
+    <div class="kc r"><div class="kl">Anomaly Duration</div><div><span class="kv" style="color:#EF4444">28</span><span class="ku">×15min</span></div><div class="ks r">~7 hrs fault condition</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#EF4444"></span>Motor Current (A) – Rising Despite Constant Load<span class="stag">⚑ Shaded = anomaly from 13:00</span></div>
+    <div class="tleg">
+      <div class="tl"><div class="tline" style="border-color:#EF4444"></div>Anomaly +20% (48A)</div>
+      <div class="tl"><div class="tline" style="border-color:#F59E0B"></div>Warning +10% (44A)</div>
+      <div class="tl"><div class="tline" style="border-color:#64748B;border-style:solid"></div>Baseline 40A</div>
+    </div>
+    <div class="cw" style="height:195px"><canvas id="c4a"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#F59E0B"></span>Winding Temperature (°C)<span class="stag">Alert &gt;90°C</span></div><div class="cw" style="height:165px"><canvas id="c4b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#00B8A9"></span>Process Load % – Flat (proves fault)</div><div class="cw" style="height:165px"><canvas id="c4c"></canvas></div><div class="ib">✓ Load flat at ~70% — rising current &amp; temp is mechanical fault, not load-driven</div></div>
+  </div>
+  <div class="fb"><div class="fi">⚑</div><div><div class="ft">ANOMALY ALERT – MTR-PUMP-1 | Current +28% at Constant Load</div><div class="fd">Winding temp crossed 90°C, process load unchanged at 70%. Likely bearing wear or misalignment. <strong>Action: Inspect bearings immediately. Risk of burnout within 48–72 hrs.</strong></div></div></div>
+</div>
+
+<!-- WATER -->
+<div class="panel" id="p-water">
+  <div class="kg">
+    <div class="kc r"><div class="kl">Leak Status</div><div><span class="kv" style="color:#EF4444;font-size:16px">ACTIVE</span></div><div class="ks r">Domestic meter · overnight</div></div>
+    <div class="kc r"><div class="kl">Leak Duration</div><div><span class="kv" style="color:#EF4444">16</span><span class="ku">×15min</span></div><div class="ks r">~4 hrs continuous</div></div>
+    <div class="kc r"><div class="kl">Max Night Flow</div><div><span class="kv" style="color:#EF4444">9.2</span><span class="ku">m³/h</span></div><div class="ks r">Normal &lt;1.5 m³/h</div></div>
+    <div class="kc a"><div class="kl">Estimated Waste</div><div><span class="kv" style="color:#F59E0B">14.8</span><span class="ku">m³</span></div><div class="ks">During leak window</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#1A5CFF"></span>Water Flow Rate 24h (m³/h)<span class="stag">⚑ Shaded = leak 17:00–21:00</span></div>
+    <div class="tleg">
+      <div class="tl"><div class="tline" style="border-color:#F59E0B"></div>Night limit 1.5 m³/h</div>
+      <div class="tl"><div class="tbox" style="background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)"></div>Leak window</div>
+    </div>
+    <div class="cw" style="height:195px"><canvas id="c5a"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#EF4444"></span>AI Leak Anomaly Score (0–1)<span class="stag">Alert ≥0.6</span></div><div class="cw" style="height:160px"><canvas id="c5b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#7C3AED"></span>Cumulative Water Consumption (m³)</div><div class="cw" style="height:160px"><canvas id="c5c"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ASSET -->
+<div class="panel" id="p-asset">
+  <div class="kg">
+    <div class="kc r"><div class="kl">PMP-01 Health Score</div><div><span class="kv" style="color:#EF4444">42</span><span class="ku">/ 100</span></div><div class="ks r">Degraded 95 → 42</div></div>
+    <div class="kc r"><div class="kl">Anomaly Score</div><div><span class="kv" style="color:#EF4444">0.82</span></div><div class="ks r">Alert &gt;0.6</div></div>
+    <div class="kc r"><div class="kl">High-Risk Intervals</div><div><span class="kv" style="color:#EF4444">28</span><span class="ku">×15min</span></div><div class="ks r">Urgent action needed</div></div>
+    <div class="kc r"><div class="kl">Recommendation</div><div><span class="kv" style="color:#EF4444;font-size:14px">Bearing Change</span></div><div class="ks r">Failure within 7 days</div></div>
+  </div>
+  <div class="card">
+    <div class="st"><span class="sd" style="background:#10B981"></span>PMP-01 Health Score – Degradation Story<span class="stag">⚑ Shaded = high-risk zone</span></div>
+    <div class="tleg">
+      <div class="tl"><div class="tline" style="border-color:#EF4444"></div>Critical &lt;60</div>
+      <div class="tl"><div class="tline" style="border-color:#F59E0B"></div>Warning &lt;80</div>
+    </div>
+    <div class="cw" style="height:195px"><canvas id="c6a"></canvas></div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="st"><span class="sd" style="background:#F59E0B"></span>Vibration mm/s<span class="stag">Alert &gt;2.5</span></div><div class="cw" style="height:155px"><canvas id="c6b"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#7C3AED"></span>Bearing Temp °C<span class="stag">Alert &gt;75°C</span></div><div class="cw" style="height:155px"><canvas id="c6c"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#EF4444"></span>Anomaly Score 0–1<span class="stag">Alert &gt;0.6</span></div><div class="cw" style="height:155px"><canvas id="c6d"></canvas></div></div>
+  </div>
+</div>
+
+<!-- DIGITAL TWIN -->
+<div class="panel" id="p-twin">
+  <div class="kg">
+    <div class="kc"><div class="kl">Baseline Energy</div><div><span class="kv" style="color:#0D1F4C">2,900</span><span class="ku">kWh/day</span></div><div class="ks">Current operation</div></div>
+    <div class="kc"><div class="kl">Full AI Saving</div><div><span class="kv" style="color:#10B981">−29.3</span><span class="ku">%</span></div><div class="ks">All modules active</div></div>
+    <div class="kc"><div class="kl">Best Scenario</div><div><span class="kv" style="color:#10B981">−32.8</span><span class="ku">%</span></div><div class="ks">Occupancy-Driven HVAC</div></div>
+    <div class="kc"><div class="kl">CO₂ Reduction (AI)</div><div><span class="kv" style="color:#10B981">−612</span><span class="ku">kg/day</span></div><div class="ks">2,088 → 1,476 kg/day</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="st"><span class="sd" style="background:#1A5CFF"></span>Simulated Energy (kWh/day)<span class="stag">vs baseline 2,900</span></div><div class="cw" style="height:195px"><canvas id="c7a"></canvas></div></div>
+    <div class="card"><div class="st"><span class="sd" style="background:#00B8A9"></span>Simulated CO₂ (kg/day)<span class="stag">vs baseline 2,088</span></div><div class="cw" style="height:195px"><canvas id="c7b"></canvas></div></div>
+  </div>
+  <div class="card"><div class="st"><span class="sd" style="background:#10B981"></span>Comfort Index (%) by Scenario</div><div class="cw" style="height:175px"><canvas id="c7c"></canvas></div></div>
+  <div class="card"><div class="st"><span class="sd" style="background:#0D1F4C"></span>Scenario Comparison</div>
+    <table class="ttbl">
+      <thead><tr><th>Scenario</th><th>Strategy</th><th>Energy kWh</th><th>Peak kW</th><th>Comfort %</th><th>CO₂ kg</th><th>Saving</th></tr></thead>
+      <tbody>
+        <tr class="br"><td class="nm">Baseline</td><td>Current operation</td><td>2,900</td><td>580</td><td>85%</td><td>2,088</td><td>—</td></tr>
+        <tr><td class="nm">Pre-cooling</td><td>Pre-cool 06:00–08:00</td><td>2,480</td><td>520</td><td>88%</td><td>1,786</td><td class="sv">−14.5%</td></tr>
+        <tr><td class="nm">Night Setback</td><td>Aggressive 22:00–06:00</td><td>2,250</td><td>490</td><td>86%</td><td>1,620</td><td class="sv">−22.4%</td></tr>
+        <tr><td class="nm">VFD Optimize</td><td>Speed −15% off-peak</td><td>2,620</td><td>550</td><td>87%</td><td>1,886</td><td class="sv">−9.7%</td></tr>
+        <tr><td class="nm">Demand Response</td><td>Load shift 15:00–18:00</td><td>2,380</td><td>495</td><td>83%</td><td>1,714</td><td class="sv">−17.9%</td></tr>
+        <tr><td class="nm">Occ-Driven AC</td><td>HVAC follows real-time occ</td><td>1,950</td><td>420</td><td>89%</td><td>1,404</td><td class="sv">−32.8%</td></tr>
+        <tr><td class="nm">Chiller Seq.</td><td>CH-01 only below 60% load</td><td>2,300</td><td>505</td><td>86%</td><td>1,656</td><td class="sv">−20.7%</td></tr>
+        <tr style="background:#EBF5FB"><td class="nm" style="color:#1A5CFF">★ Full AI</td><td>All modules active</td><td>2,050</td><td>440</td><td>90%</td><td>1,476</td><td class="svb">−29.3%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+<div class="footer">Mt Fuji AI Platform · Smart Facility Optimisation · Demo Dataset · BLD-HQ 5,000 m² · © 2025 Haber Digital Products</div>
+
+<script>
+/* =========================================================
+   HELPERS
+========================================================= */
+function seed(s) {
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
+}
+
+function ts(i) {
+  var h = Math.floor(i * 15 / 60);
+  var m = (i % 4) * 15;
+  return (h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : m);
+}
+
+var TS = [];
+for (var _i = 0; _i < 96; _i++) { TS.push(ts(_i)); }
+
+function rgba(hex, a) {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+}
+
+/* =========================================================
+   DATA
+========================================================= */
+function makeChiller() {
+  var r = seed(42);
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var bad = (i >= 44 && i < 64);
+    var t = bad ? i - 44 : 0;
+    var ci = bad ? 29 + t * 0.18 + r() * 0.4 - 0.2 : 29 + r() * 0.8 - 0.4;
+    var cDT = bad ? 10 + t * 0.05 + r() * 0.5 - 0.25 : 6.5 + r() - 0.5;
+    var ctDT = bad ? 2.5 - t * 0.03 + r() * 0.3 - 0.15 : 5 + r() * 0.8 - 0.4;
+    var load = 450 + (i >= 32 && i < 72 ? 50 : -50) + r() * 30 - 15;
+    var pw = bad ? load * (1.05 + t * 0.004) : load * (0.74 + r() * 0.06);
+    out.push({
+      kwTR: parseFloat((pw / load).toFixed(3)),
+      ci: parseFloat(ci.toFixed(1)),
+      co: parseFloat((ci + cDT).toFixed(1)),
+      ctDT: parseFloat(ctDT.toFixed(2)),
+      bad: bad
+    });
+  }
+  return out;
+}
+
+function makeEnergy() {
+  var r = seed(77);
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var pk = (i >= 32 && i < 72);
+    var h = pk ? 280 + r() * 60 : 80 + r() * 30;
+    var l = pk ? 18 + r() * 5 : 4 + r() * 3;
+    var o = 15 + r() * 8;
+    var tot = h + l + o;
+    out.push({
+      h: Math.round(h), l: Math.round(l), o: Math.round(o),
+      tot: Math.round(tot),
+      pd: Math.round(tot + r() * 30),
+      occ: parseFloat((pk ? 65 + r() * 25 : 5 + r() * 15).toFixed(1)),
+      kwh: parseFloat((tot * 0.25).toFixed(2))
+    });
+  }
+  return out;
+}
+
+function makeAHU() {
+  var r = seed(13);
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var oc = (i >= 28 && i < 40);
+    var pk = (i >= 32 && i < 72);
+    var occ = pk ? 20 + r() * 40 : r() * 3;
+    var cv = Math.min(100, occ * 0.8 + r() * 5);
+    var flow = 3000 + occ * 20 + r() * 100;
+    out.push({
+      co2: Math.round(400 + occ * 10 + r() * 80 - 40),
+      zt: parseFloat((oc ? 21 + r() * 0.8 : 23 + r() * 1.5 - 0.75).toFixed(1)),
+      occ: parseFloat(occ.toFixed(1)),
+      cv: parseFloat(cv.toFixed(1)),
+      flow: Math.round(flow),
+      cold: oc
+    });
+  }
+  return out;
+}
+
+function makeMotor() {
+  var r = seed(99);
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var a = (i >= 52 && i < 80);
+    var t = a ? i - 52 : 0;
+    out.push({
+      cur: parseFloat((a ? 40 + t * 0.38 + r() * 0.5 - 0.25 : 40 + r() * 1.5 - 0.75).toFixed(1)),
+      wt: parseFloat((a ? 80 + t * 0.5 + r() - 0.5 : 80 + r() * 3 - 1.5).toFixed(1)),
+      load: parseFloat((70 + r() * 3 - 1.5).toFixed(1)),
+      anom: a
+    });
+  }
+  return out;
+}
+
+function makeWater() {
+  var r = seed(55);
+  var cum = 0;
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var lk = (i >= 68 && i < 84);
+    var fl = parseFloat((lk ? 8 + r() * 1.5 - 0.75 : (i >= 32 && i < 72) ? 3 + r() * 0.8 : 0.8 + r() * 0.2).toFixed(2));
+    cum = parseFloat((cum + fl * 0.25).toFixed(3));
+    out.push({
+      flow: fl,
+      sc: parseFloat((lk ? 0.7 + r() * 0.25 : r() * 0.15).toFixed(2)),
+      cum: cum,
+      leak: lk
+    });
+  }
+  return out;
+}
+
+function makeAsset() {
+  var r = seed(21);
+  var out = [];
+  for (var i = 0; i < 96; i++) {
+    var d = (i >= 48);
+    var t = d ? i - 48 : 0;
+    out.push({
+      hs: Math.round(Math.max(20, d ? 95 - t * 1.1 + r() * 3 - 1.5 : 93 + r() * 5 - 2.5)),
+      vib: parseFloat((d ? 0.8 + t * 0.032 + r() * 0.06 : 0.8 + r() * 0.15).toFixed(2)),
+      bt: parseFloat((d ? 52 + t * 0.55 + r() * 1.5 - 0.75 : 52 + r() * 3 - 1.5).toFixed(1)),
+      an: parseFloat((d ? Math.min(1, t * 0.027 + r() * 0.04) : r() * 0.12).toFixed(3)),
+      hi: d && t > 14
+    });
+  }
+  return out;
+}
+
+function makeKPI() {
+  var r = seed(33);
+  var out = [];
+  for (var d = 0; d < 30; d++) {
+    var dt = new Date(2025, 1, 15 + d);
+    var e = Math.round(2800 - d * 3 + r() * 200 - 100);
+    out.push({
+      date: (dt.getMonth() + 1) + '/' + dt.getDate(),
+      e: e,
+      co2: Math.round(e * 0.7),
+      esg: parseFloat((72 + d * 0.15 + r() * 5 - 2.5).toFixed(1))
+    });
+  }
+  return out;
+}
+
+/* =========================================================
+   CHART CREATION
+========================================================= */
+var baseOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: { duration: 500 },
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#fff',
+      titleColor: '#64748B',
+      bodyColor: '#1e293b',
+      borderColor: '#E2E8F0',
+      borderWidth: 1,
+      padding: 9,
+      boxPadding: 4
+    }
+  },
+  scales: {
+    x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 9 }, maxTicksLimit: 13 } },
+    y: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { size: 9 } } }
+  }
+};
+
+/* Horizontal reference line plugin */
+function hlPlugin(lines) {
+  return {
+    id: 'hl',
+    afterDraw: function(ch) {
+      var ctx = ch.ctx;
+      var ca = ch.chartArea;
+      var ys = ch.scales.y;
+      if (!ca) return;
+      for (var i = 0; i < lines.length; i++) {
+        var ln = lines[i];
+        var y = ys.getPixelForValue(ln.v);
+        ctx.save();
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = ln.c;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(ca.left, y);
+        ctx.lineTo(ca.right, y);
+        ctx.stroke();
+        if (ln.lbl) {
+          ctx.setLineDash([]);
+          ctx.fillStyle = ln.c;
+          ctx.font = 'bold 9px Segoe UI';
+          ctx.textAlign = 'right';
+          ctx.fillText(ln.lbl, ca.right - 3, y - 4);
+        }
+        ctx.restore();
+      }
+    }
+  };
+}
+
+/* Vertical band shading plugin */
+function vbPlugin(ranges, color) {
+  return {
+    id: 'vb',
+    beforeDraw: function(ch) {
+      var ctx = ch.ctx;
+      var ca = ch.chartArea;
+      var xs = ch.scales.x;
+      if (!ca) return;
+      ctx.save();
+      ctx.fillStyle = color;
+      for (var i = 0; i < ranges.length; i++) {
+        var x0 = xs.getPixelForValue(ranges[i][0]);
+        var x1 = xs.getPixelForValue(ranges[i][1]);
+        ctx.fillRect(x0, ca.top, x1 - x0, ca.bottom - ca.top);
+      }
+      ctx.restore();
+    }
+  };
+}
+
+/* Build band ranges from an array of timestamps */
+function mkBands(arr) {
+  var out = [];
+  for (var i = 0; i < arr.length - 1; i++) {
+    out.push([arr[i], arr[i + 1]]);
+  }
+  return out;
+}
+
+/* Simple area chart */
+function mkArea(id, labels, data, color, yMin, yMax, hlines, bands, bandColor) {
+  var plugins = [];
+  if (hlines && hlines.length) plugins.push(hlPlugin(hlines));
+  if (bands && bands.length) plugins.push(vbPlugin(bands, rgba(bandColor || '#EF4444', 0.09)));
+
+  var o = JSON.parse(JSON.stringify(baseOpts));
+  o.scales.y.min = yMin;
+  if (yMax !== undefined && yMax !== null) o.scales.y.max = yMax;
+
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        borderColor: color,
+        backgroundColor: rgba(color, 0.1),
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: o,
+    plugins: plugins
+  });
+}
+
+/* Multi-line chart */
+function mkLines(id, labels, datasets, yMin, yMax, hlines, bands, bandColor) {
+  var plugins = [];
+  if (hlines && hlines.length) plugins.push(hlPlugin(hlines));
+  if (bands && bands.length) plugins.push(vbPlugin(bands, rgba(bandColor || '#EF4444', 0.09)));
+
+  var o = JSON.parse(JSON.stringify(baseOpts));
+  o.scales.y.min = yMin;
+  if (yMax !== undefined && yMax !== null) o.scales.y.max = yMax;
+
+  for (var i = 0; i < datasets.length; i++) {
+    datasets[i].tension = 0.4;
+    datasets[i].pointRadius = 0;
+    if (!datasets[i].borderWidth) datasets[i].borderWidth = 2;
+  }
+
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: { labels: labels, datasets: datasets },
+    options: o,
+    plugins: plugins
+  });
+}
+
+/* Dual-axis chart */
+function mkDual(id, labels, ds1, ds2, col1, col2) {
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { data: ds1, borderColor: col1, backgroundColor: rgba(col1, 0.1), fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2, yAxisID: 'yL' },
+        { data: ds2, borderColor: col2, backgroundColor: 'transparent', tension: 0.4, pointRadius: 0, borderWidth: 2, borderDash: [5, 3], yAxisID: 'yR' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#fff', titleColor: '#64748B', bodyColor: '#1e293b', borderColor: '#E2E8F0', borderWidth: 1, padding: 9 }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 9 }, maxTicksLimit: 13 } },
+        yL: { grid: { color: '#F1F5F9' }, ticks: { color: '#94A3B8', font: { size: 9 } } },
+        yR: { position: 'right', grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 9 } } }
+      }
+    }
+  });
+}
+
+/* Stacked bar + line */
+function mkStack(id, labels, bH, bL, bO, lineData, hlines, bands) {
+  var plugins = [];
+  if (hlines && hlines.length) plugins.push(hlPlugin(hlines));
+  if (bands && bands.length) plugins.push(vbPlugin(bands, rgba('#EF4444', 0.1)));
+
+  var o = JSON.parse(JSON.stringify(baseOpts));
+
+  new Chart(document.getElementById(id), {
+    data: {
+      labels: labels,
+      datasets: [
+        { type: 'bar', label: 'HVAC', data: bH, backgroundColor: '#1A5CFF', stack: 's' },
+        { type: 'bar', label: 'Lighting', data: bL, backgroundColor: '#00B8A9', stack: 's' },
+        { type: 'bar', label: 'Other', data: bO, backgroundColor: '#7C3AED', stack: 's' },
+        { type: 'line', label: 'Peak kW', data: lineData, borderColor: '#EF4444', backgroundColor: 'transparent', tension: 0.4, pointRadius: 0, borderWidth: 2 }
+      ]
+    },
+    options: o,
+    plugins: plugins
+  });
+}
+
+/* Bar chart */
+function mkBar(id, labels, data, colors, yMin, yMax, hlines) {
+  var plugins = [];
+  if (hlines && hlines.length) plugins.push(hlPlugin(hlines));
+
+  var o = JSON.parse(JSON.stringify(baseOpts));
+  o.scales.y.min = yMin;
+  if (yMax) o.scales.y.max = yMax;
+
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{ data: data, backgroundColor: colors, borderRadius: 5, borderSkipped: false }]
+    },
+    options: o,
+    plugins: plugins
+  });
+}
+
+/* =========================================================
+   LAZY TAB BUILDER
+========================================================= */
+var built = {};
+
+function buildTab(tab) {
+  if (built[tab]) return;
+  built[tab] = true;
+
+  var CH = makeChiller();
+  var EN = makeEnergy();
+  var AH = makeAHU();
+  var MT = makeMotor();
+  var WT = makeWater();
+  var AS = makeAsset();
+  var KD = makeKPI();
+
+  var FOUL  = mkBands(TS.slice(44, 64));
+  var FANOM = mkBands(TS.slice(52, 80));
+  var FLEAK = mkBands(TS.slice(68, 84));
+  var FCOLD = mkBands(TS.slice(28, 40));
+  var FASSET= mkBands(TS.slice(62, 96));
+
+  var kwTR=[], ci=[], co=[], ctDT=[];
+  var eH=[], eL=[], eO=[], eTot=[], ePD=[], eOcc=[], eKwh=[];
+  var aCO2=[], aZT=[], aOcc=[], aCv=[], aFlow=[];
+  var mCur=[], mWt=[], mLoad=[];
+  var wFlow=[], wSc=[], wCum=[];
+  var asHS=[], asVib=[], asBt=[], asAn=[];
+
+  for (var i = 0; i < 96; i++) {
+    kwTR.push(CH[i].kwTR); ci.push(CH[i].ci); co.push(CH[i].co); ctDT.push(CH[i].ctDT);
+    eH.push(EN[i].h); eL.push(EN[i].l); eO.push(EN[i].o);
+    eTot.push(EN[i].tot); ePD.push(EN[i].pd); eOcc.push(EN[i].occ); eKwh.push(EN[i].kwh);
+    aCO2.push(AH[i].co2); aZT.push(AH[i].zt); aOcc.push(AH[i].occ);
+    aCv.push(AH[i].cv); aFlow.push(AH[i].flow);
+    mCur.push(MT[i].cur); mWt.push(MT[i].wt); mLoad.push(MT[i].load);
+    wFlow.push(WT[i].flow); wSc.push(WT[i].sc); wCum.push(WT[i].cum);
+    asHS.push(AS[i].hs); asVib.push(AS[i].vib); asBt.push(AS[i].bt); asAn.push(AS[i].an);
+  }
+
+  var KD_dates=[], KD_e=[], KD_co2=[], KD_esg=[];
+  for (var d = 0; d < 30; d++) {
+    KD_dates.push(KD[d].date); KD_e.push(KD[d].e);
+    KD_co2.push(KD[d].co2); KD_esg.push(KD[d].esg);
+  }
+
+  if (tab === 'overview') {
+    mkArea('c0a', KD_dates, KD_e,   '#1A5CFF', 2200, 3100, [{v:2800,c:'#F59E0B',lbl:'Target 2800'}], [], '');
+    mkArea('c0b', KD_dates, KD_co2, '#00B8A9', 1400, 2300, [], [], '');
+    mkArea('c0c', KD_dates, KD_esg, '#7C3AED', 60,   90,   [], [], '');
+  }
+
+  if (tab === 'chiller') {
+    mkArea('c1a', TS, kwTR, '#1A5CFF', 0.5, 1.45,
+      [{v:1.0,c:'#EF4444',lbl:'ALERT 1.0'},{v:0.85,c:'#F59E0B',lbl:'WARN 0.85'}],
+      FOUL, '#EF4444');
+    mkLines('c1b', TS,
+      [{label:'Cond In',data:ci,borderColor:'#1A5CFF',backgroundColor:'transparent'},
+       {label:'Cond Out',data:co,borderColor:'#EF4444',backgroundColor:'transparent'}],
+      25, 52, [], FOUL, '#EF4444');
+    mkArea('c1c', TS, ctDT, '#7C3AED', 0, 8,
+      [{v:3,c:'#EF4444',lbl:'FOUL <3°C'}], FOUL, '#EF4444');
+  }
+
+  if (tab === 'energy') {
+    var breachBands = [];
+    for (var j = 0; j < 95; j++) {
+      if (ePD[j] > 520) breachBands.push([TS[j], TS[j + 1]]);
+    }
+    mkStack('c2a', TS, eH, eL, eO, ePD,
+      [{v:520,c:'#EF4444',lbl:'LIMIT 520kW'}], breachBands);
+    mkDual('c2b', TS, eTot, eOcc, '#1A5CFF', '#F59E0B');
+    mkArea('c2c', TS, eKwh, '#10B981', 0, 200, [], [], '');
+  }
+
+  if (tab === 'ahu') {
+    mkArea('c3a', TS, aZT, '#1A5CFF', 18, 27,
+      [{v:24,c:'#EF4444',lbl:'HOT >24°C'},{v:22,c:'#3B82F6',lbl:'COLD <22°C'},{v:23,c:'#10B981',lbl:'SET 23°C'}],
+      FCOLD, '#3B82F6');
+    mkDual('c3b', TS, aCO2, aOcc, '#00B8A9', '#7C3AED');
+    mkDual('c3c', TS, aFlow, aCv, '#1A5CFF', '#EF4444');
+  }
+
+  if (tab === 'motor') {
+    mkArea('c4a', TS, mCur, '#EF4444', 35, 62,
+      [{v:48,c:'#EF4444',lbl:'ANOMALY 48A'},{v:44,c:'#F59E0B',lbl:'WARN 44A'},{v:40,c:'#64748B',lbl:'Baseline 40A'}],
+      FANOM, '#EF4444');
+    mkArea('c4b', TS, mWt, '#F59E0B', 70, 115,
+      [{v:90,c:'#EF4444',lbl:'ALERT 90°C'}], FANOM, '#EF4444');
+    mkArea('c4c', TS, mLoad, '#00B8A9', 60, 80, [], [], '');
+  }
+
+  if (tab === 'water') {
+    mkArea('c5a', TS, wFlow, '#1A5CFF', 0, 12,
+      [{v:1.5,c:'#F59E0B',lbl:'NIGHT LIMIT 1.5'}], FLEAK, '#EF4444');
+    mkArea('c5b', TS, wSc, '#EF4444', 0, 1,
+      [{v:0.6,c:'#EF4444',lbl:'ALERT 0.6'}], FLEAK, '#EF4444');
+    mkArea('c5c', TS, wCum, '#7C3AED', 0, undefined, [], [], '');
+  }
+
+  if (tab === 'asset') {
+    mkArea('c6a', TS, asHS, '#10B981', 0, 100,
+      [{v:60,c:'#EF4444',lbl:'CRITICAL <60'},{v:80,c:'#F59E0B',lbl:'WARNING <80'}],
+      FASSET, '#EF4444');
+    mkArea('c6b', TS, asVib, '#F59E0B', 0, 4,
+      [{v:2.5,c:'#EF4444',lbl:'ALERT 2.5'}], FASSET, '#EF4444');
+    mkArea('c6c', TS, asBt, '#7C3AED', 40, 90,
+      [{v:75,c:'#EF4444',lbl:'ALERT 75°C'}], FASSET, '#EF4444');
+    mkArea('c6d', TS, asAn, '#EF4444', 0, 1,
+      [{v:0.6,c:'#EF4444',lbl:'ALERT 0.6'}], FASSET, '#EF4444');
+  }
+
+  if (tab === 'twin') {
+    var TL = ['Baseline','Pre-cool','Night Setback','VFD Opt.','Demand Resp.','Occ-Driven','Chiller Seq','★ Full AI'];
+    var TC = TL.map(function(_, i) { return i === 0 ? '#94A3B8' : (i === 7 ? '#1A5CFF' : '#00B8A9'); });
+    mkBar('c7a', TL, [2900,2480,2250,2620,2380,1950,2300,2050], TC, 1500, 3100,
+      [{v:2900,c:'#EF4444',lbl:'Baseline 2900'}]);
+    mkBar('c7b', TL, [2088,1786,1620,1886,1714,1404,1656,1476], TC, 1200, 2200,
+      [{v:2088,c:'#EF4444',lbl:'Baseline 2088'}]);
+    mkBar('c7c', TL, [85,88,86,87,83,89,86,90],
+      TL.map(function(_, i) { return i === 7 ? '#1A5CFF' : '#10B981'; }), 75, 95, []);
+  }
+}
+
+/* =========================================================
+   TAB SWITCHING  –  global functions used by onclick
+========================================================= */
+var PANELS = {
+  overview: 'p-overview', chiller: 'p-chiller', energy: 'p-energy',
+  ahu: 'p-ahu', motor: 'p-motor', water: 'p-water',
+  asset: 'p-asset', twin: 'p-twin'
+};
+
+function go(tab, btn) {
+  var ids = Object.values(PANELS);
+  for (var i = 0; i < ids.length; i++) {
+    var p = document.getElementById(ids[i]);
+    if (p) p.classList.remove('on');
+  }
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+  var target = document.getElementById(PANELS[tab]);
+  if (target) target.classList.add('on');
+  btn.classList.add('on');
+  requestAnimationFrame(function() { buildTab(tab); });
+}
+
+function toggleAlerts() {
+  var b = document.getElementById('abar');
+  b.style.display = b.style.display === 'none' ? 'flex' : 'none';
+}
+
+/* Build first tab on load */
+window.addEventListener('load', function() { buildTab('overview'); });
+</script>
+</body>
+</html>
